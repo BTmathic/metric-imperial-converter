@@ -12,12 +12,17 @@ function ConvertHandler()  {
     let result = [];
     const divide = input.search(/[a-zA-Z]/);
     const number = input.slice(0,divide);
-    const unit = input.slice(divide);
-    
-    console.log(divide, number, unit);
+    let unit = input.slice(divide).toLowerCase();
+    if (unit === 'l') {
+      unit = 'L';
+    }
     
     // check for valid input
-    if (number.search(/[^0-9.\/]/) === -1 && number.split('.').length < 3) {
+    if (number.search(/[^0-9.\/]/) === -1
+      && number.split('.').length < 3 // numbers can only have one decimal point
+      && number.search('//') === -1 // Javascript evaluates this as a comment, not an error
+      //&& number.search("**") === -1
+    ) {
       result.push(number === '' ? 1 : eval(number));
     } else {
       result.push('Invalid number');
@@ -30,6 +35,10 @@ function ConvertHandler()  {
     }
     
     return result;
+  };
+  
+  this.round = (number) => {
+    return Math.round(100000*number)/100000;
   };
 
   this.spellOutUnit = (unit) => {
@@ -67,22 +76,22 @@ function ConvertHandler()  {
     let result;
     switch(initUnit) {
       case 'gal':
-        result = [galToL*initNum, 'L'];
+        result = [this.round(galToL*initNum), 'L'];
         break;
       case 'L':
-        result = [initNum/galToL, 'gal'];
+        result = [this.round(initNum/galToL), 'gal'];
         break;
       case 'lbs':
-        result = [lbsToKg*initNum, 'kg'];
+        result = [this.round(lbsToKg*initNum), 'kg'];
         break;
       case 'kg':
-        result = [initNum/lbsToKg, 'lbs'];
+        result = [this.round(initNum/lbsToKg), 'lbs'];
         break;
       case 'mi':
-        result = [miToKm*initNum, 'km'];
+        result = [this.round(miToKm*initNum), 'km'];
         break;
       case 'km':
-        result = [initNum/miToKm, 'mi'];
+        result = [this.round(initNum/miToKm), 'mi'];
         break;
       default:
         result = 'typo'
